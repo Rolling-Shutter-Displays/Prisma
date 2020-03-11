@@ -1,8 +1,11 @@
 /*
-  PrismaV1.ino
+  Prisma.ino
   
   created 29 Dic 2019
   by derfaq
+  
+  modified 11 Mar 2020
+  
 */
 
 #include <RSD.h>
@@ -27,6 +30,12 @@ Channel white( pinW , COMMON_CATHODE , BWIDTH );
 
 Screen display( &red , &green , &blue );
 
+Channel *ch[4] = { &red , &green , &blue , &white  };
+
+// Programs  ///////////////////////////////////////////////////////////////////////////////
+#include "Utils.h"
+#include "Program.h"
+
 int scene;
 
 #define ORANGE 8
@@ -41,9 +50,9 @@ void setup() {
   //Setup of the RSD 
   rsd.begin( 30 , BWIDTH );
   
-  rsd.attachChannel( red );
-  rsd.attachChannel( green );
-  rsd.attachChannel( blue );
+  rsd.attachChannel( &red );
+  rsd.attachChannel( &green );
+  rsd.attachChannel( &blue );
 
   rsd.attachDraw( draw );
 
@@ -59,9 +68,9 @@ void loop() {
   rsd.update();
   
   // Tuning: Analog way
-  int tick = map( analogRead( A0 ), 0 , 1023 , rsd.getLowerTick() , rsd.getHigherTick() );
-  rsd.setTick( tick );
-  rsd.setFine( tick );
+  int thick = map( analogRead( A0 ), 0 , 1023 , rsd.getLowerThick() , rsd.getHigherThick() );
+  rsd.setThick( thick );
+  rsd.setFine( thick );
 
   /*
   //Tuning: Fixed way
@@ -132,14 +141,14 @@ void draw() {
 }
 
 
-void dither( int x0 , int x1 , Channel ch ) {
+void dither( int x0 , int x1 , Channel *ch ) {
   if ( x1 > x0 ) {  
     do {
-      if ( x1 % 2 ) ch.line( x1 );
+      if ( x1 % 2 ) ch->line( x1 );
       x1--;
     } while( x1 > x0 ); 
     
-    if ( x1 % 2 ) ch.line( x0 ) ;
+    if ( x1 % 2 ) ch->line( x0 ) ;
   }
     /*
   } else if( x1 == x0 ) {
