@@ -8,16 +8,30 @@
   
 */
 
+// Libraries  ////////////////////////////////////////////////////////////////////////////
+
+// RSD : https://github.com/Rolling-Shutter-Displays/RSD
+
 #include <RSD.h>
 #include <Channel.h>
 #include <Screen.h>
+
+// EButton : https://github.com/jonnieZG/EButton
+// ------- Specify not required features before including the EButton.h --------
+#define EBUTTON_SUPPORT_TRANSITION_DISABLED
+#define EBUTTON_SUPPORT_EACH_CLICK_DISABLED
+#define EBUTTON_SUPPORT_DONE_CLICKING_DISABLED
+//#define EBUTTON_SUPPORT_SINGLE_AND_DOUBLE_CLICKS_DISABLED
+#define EBUTTON_SUPPORT_LONG_PRESS_START_DISABLED
+#define EBUTTON_SUPPORT_LONG_PRESS_DURING_DISABLED
+
+#include "EButton.h"
 
 //Right Order
 const int pinR = 6;  //OC0A
 const int pinG = 5;  //OC0B
 const int pinB = 11; //OC2A
 const int pinW = 3;  //OC2B
-
 
 RSD rsd;
 #define BWIDTH 64
@@ -31,6 +45,10 @@ Channel white( pinW , COMMON_CATHODE , BWIDTH );
 Screen display( &red , &green , &blue );
 
 Channel *ch[4] = { &red , &green , &blue , &white  };
+
+EButton buttonMain( A1 );
+EButton buttonNext( A2 );
+EButton buttonPrev( A3 );
 
 // Programs  ///////////////////////////////////////////////////////////////////////////////
 #include "Utils.h"
@@ -64,6 +82,11 @@ void setup() {
 }
 
 void loop() {
+  //
+  buttonMain.tick();
+  buttonNext.tick();
+  buttonPrev.tick();
+  
   //Run the engine
   rsd.update();
   
